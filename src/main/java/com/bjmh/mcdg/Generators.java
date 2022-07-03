@@ -1,20 +1,31 @@
 package com.bjmh.mcdg;
 
+import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.bjmh.lib.io.config.ConfigNode;
 import com.bjmh.lib.io.config.ConfigSection;
 
 public class Generators {
-    public static void generateBlockstate(ConfigSection section, String modid) {
-        File file = new File((System.getProperty("user.dir") + "/assets/" + modid + "/blockstates/" + name + ".json").replace("/", FILE_SEPARATOR));
+    public static void generateBlockstate(ConfigSection section, String modid) throws IOException {
+        File file = new File(Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
+                Main.USER_DIR, "assets", modid, "blockstates"));
+
         FileWriter writer = new FileWriter(file);
 
         writer.write("{\n");
         writer.write("  \"forge_marker\": 1,\n");
         writer.write("  \"defaults\": {\n");
-        writer.write("    \"model\": \"" + modid + ":" + (path.startsWith("/") ? removeCharacter(path, 0) : path) + (path.endsWith("/") ? "" : "/") + name + "\"\n");
+        writer.write("    \"model\": \"" + modid + ":"
+                + (Util.getChildValue(Main.PATH_KEY, section).startsWith(Main.FILE_SEPARATOR)
+                        ? Util.trimFromStart(Util.getChildValue(Main.PATH_KEY, section))
+                        : Util.getChildValue(Main.PATH_KEY, section))
+                + (Util.getChildValue(Main.PATH_KEY, section).endsWith(Main.FILE_SEPARATOR) ? ""
+                        : Main.FILE_SEPARATOR)
+                + Util.getChildValue(Main.REGISTRY_KEY, section) + "\"\n");
         writer.write("  },\n");
         writer.write("  \"variants\": {\n");
         writer.write("    \"normal\": [{}],\n");
@@ -30,22 +41,129 @@ public class Generators {
         writer.write("  }\n");
         writer.write("}");
 
+        writer.flush();
         writer.close();
     }
 
-    public static void generateBlockModel(ConfigSection section, String modid) {
-        
+    public static void generateBlockModel(ConfigSection section, String modid) throws IOException {
+        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "models",
+                "block", Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section)))).mkdirs();
+
+        File file = new File(
+                Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
+                        Main.USER_DIR,
+                        "assets", modid, "models", "block",
+                        Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))));
+
+        FileWriter writer = new FileWriter(file);
+
+        String SIDE = modid + ":blocks" + Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))
+                + Util.getChildValue(Main.REGISTRY_KEY, section) + "\"";
+
+        writer.write("{\n");
+        writer.write("  \"parent\": \"block/cube\",\n");
+        writer.write("  \"textures\": {\n");
+        writer.write("    \"particle\": \"" + SIDE + ",\n");
+        writer.write("    \"down\": \"" + SIDE + ",\n");
+        writer.write("    \"up\": \"" + SIDE + ",\n");
+        writer.write("    \"east\": \"" + SIDE + ",\n");
+        writer.write("    \"west\": \"" + SIDE + ",\n");
+        writer.write("    \"north\": \"" + SIDE + ",\n");
+        writer.write("    \"south\": \"" + SIDE + "\n");
+        writer.write("  }\n");
+        writer.write("}");
+
+        writer.flush();
+        writer.close();
     }
 
-    public static void generateItemModel(ConfigSection section, String modid) {
-        
+    public static void generateItemModel(ConfigSection section, String modid) throws IOException {
+        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "models", "item",
+                Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section)))).mkdirs();
+
+        File file = new File(
+                Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
+                        Main.USER_DIR,
+                        "assets", modid, "models", "item",
+                        Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))));
+
+        FileWriter writer = new FileWriter(file);
+
+        writer.write("{\n");
+        writer.write("  \"parent\": \"item/generated\",\n");
+        writer.write("  \"textures\": {\n");
+        writer.write(
+                "    \"layer0\": \"" + modid + ":items"
+                        + Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))
+                        + Util.getChildValue(Main.REGISTRY_KEY, section) + "\"\n");
+        writer.write("  }\n");
+        writer.write("}");
+
+        writer.flush();
+        writer.close();
     }
 
-    public static void generateLocalisation(ConfigSection section, String modid) {
-        
+    public static void generateLocalisation(ConfigSection section, String modid) throws IOException {
+        File file = new File(Util.createSystemPath("en_us.lang", Main.USER_DIR, "assets", modid, "lang"));
+        FileWriter writer = new FileWriter(file);
+
+        if (section.getChild(Main.NAME_KEY) == null) {
+            writer.append(Util.getChildValue(Main.TYPE_KEY, section) + "." + modid + "."
+                    + Util.getChildValue(Main.REGISTRY_KEY, section) + ".name="
+                    + Util.getNameFromRegistryName(Util.getChildValue(Main.REGISTRY_KEY, section))
+                    + "\n");
+        } else {
+            if (Util.getChildValue(Main.TYPE_KEY, section).equals("itemGroup")) {
+                writer.append(Util.getChildValue(Main.TYPE_KEY, section) + "."
+                        + Util.getChildValue(Main.REGISTRY_KEY, section) + "="
+                        + Util.getChildValue(Main.NAME_KEY, section) + "\n");
+            } else {
+                writer.append(Util.getChildValue(Main.TYPE_KEY, section) + "." + modid + "."
+                        + Util.getChildValue(Main.REGISTRY_KEY, section) + ".name="
+                        + Util.getChildValue(Main.NAME_KEY, section) + "\n");
+            }
+        }
+
+        writer.flush();
+        writer.close();
     }
 
-    public static void generateTexture(ConfigSection section, String modid) {
-        
+    public static void generateTexture(ConfigSection section, String modid) throws IOException {
+        BufferedImage base = new BufferedImage(
+                Util.getChildValue(Main.SIZE_KEY, section) != null
+                        ? Integer.valueOf(Util.getChildValue(Main.SIZE_KEY, section)
+                                .split("x")[0])
+                        : 16,
+                Util.getChildValue(Main.SIZE_KEY, section) != null ? Integer
+                        .valueOf(Util.getChildValue(Main.SIZE_KEY, section).split("x")[1])
+                        : 16,
+                BufferedImage.TYPE_INT_ARGB);
+
+        for (int i = 0; true; i++) {
+            if (section.getChild(Main.LAYER_KEY + "_" + i) == null)
+                break;
+
+            ConfigNode layerNode = Main.CONFIG
+                    .getChild(Main.CONFIG.newConfigPath(Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
+
+            if (!(layerNode instanceof ConfigSection))
+                break;
+
+            ConfigSection layer = (ConfigSection) layerNode;
+
+            BufferedImage image = Util.loadImage(
+                    Util.getChildValue(Main.PATH_KEY, layer),
+                    Util.getPathFromType(Util.getChildValue(Main.TYPE_KEY, layer)),
+                    Util.getChildValue(Main.REGISTRY_KEY, layer),
+                    modid);
+
+            Util.writeLayer(base, image, Util.getChildValue(Main.TRANSPARENT_KEY, layer));
+
+        }
+
+        Util.saveImage(base, Util.getChildValue(Main.PATH_KEY, section),
+                Util.getPathFromType(Util.getChildValue(Main.TYPE_KEY, section)),
+                Util.getChildValue(Main.REGISTRY_KEY, section),
+                modid);
     }
 }
