@@ -141,10 +141,12 @@ public class Generators {
     public static void generateTexture(ConfigSection section, String modid) throws IOException {
         BufferedImage base = new BufferedImage(
                 Util.getChildValue(Main.SIZE_KEY, section) != null
-                        ? Integer.valueOf(Util.getChildValue(Main.SIZE_KEY, section).split("x")[0])
+                        ? Integer.valueOf(Util.getChildValue(Main.SIZE_KEY, section)
+                                .split("x")[0])
                         : 16,
                 Util.getChildValue(Main.SIZE_KEY, section) != null
-                        ? Integer.valueOf(Util.getChildValue(Main.SIZE_KEY, section).split("x")[1])
+                        ? Integer.valueOf(Util.getChildValue(Main.SIZE_KEY, section)
+                                .split("x")[1])
                         : 16,
                 6);
 
@@ -153,7 +155,8 @@ public class Generators {
                 break;
 
             ConfigNode layerNode = Main.CONFIG
-                    .getChild(Main.CONFIG.newConfigPath(Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
+                    .getChild(Main.CONFIG.newConfigPath(
+                            Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
 
             System.err.println("| Writting layer: " + layerNode);
 
