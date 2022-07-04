@@ -90,6 +90,8 @@ public class Main {
             @Override
             public void accept(ConfigNode node) {
 
+                System.err.println("+- Parsing: " + node);
+
                 if (!(node instanceof ConfigSection && node.getType().equals(ConfigNode.Type.COMPLEX_OPTION)))
                     return;
 
@@ -103,7 +105,7 @@ public class Main {
                 }
 
                 System.out.println("+- Parsing: " + section.getName() + ", From: " + section.getParent().getName());
-                System.err.println("+- Parsing: " + section);
+                System.err.println("+- Generating: " + section);
 
                 try {
                     if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.MODEL_KEY, section)) {

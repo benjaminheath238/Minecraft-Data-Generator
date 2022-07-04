@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -143,5 +145,15 @@ public class Util {
             default:
                 return type;
         }
+    }
+
+    public static void writeToFile(List<String> data, String path) throws IOException {
+        FileWriter writer = new FileWriter(new File(path));
+        for (String line : data) {
+            writer.write(line);
+            writer.write("\n");
+        }
+        writer.flush();
+        writer.close();
     }
 }

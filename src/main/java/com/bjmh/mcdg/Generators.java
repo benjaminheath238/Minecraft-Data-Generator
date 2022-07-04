@@ -1,7 +1,6 @@
 package com.bjmh.mcdg;
 
 import java.awt.image.BufferedImage;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,7 +9,11 @@ import com.bjmh.lib.io.config.ConfigNode;
 import com.bjmh.lib.io.config.ConfigSection;
 
 public class Generators {
+    private static boolean lfe = false;
+
     public static void generateBlockstate(ConfigSection section, String modid) throws IOException {
+        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "blockstates")).mkdirs();
+
         File file = new File(Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
                 Main.USER_DIR, "assets", modid, "blockstates"));
 
@@ -104,25 +107,32 @@ public class Generators {
     }
 
     public static void generateLocalisation(ConfigSection section, String modid) throws IOException {
+
+        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "lang")).mkdirs();
+
         File file = new File(Util.createSystemPath("en_us.lang", Main.USER_DIR, "assets", modid, "lang"));
-        FileWriter writer = new FileWriter(file);
+        if (lfe == false)
+            file.delete();
+        FileWriter writer = new FileWriter(file, true);
 
         if (section.getChild(Main.NAME_KEY) == null) {
-            writer.append(Util.getChildValue(Main.TYPE_KEY, section) + "." + modid + "."
+            writer.write(Util.getChildValue(Main.TYPE_KEY, section) + "." + modid + "."
                     + Util.getChildValue(Main.REGISTRY_KEY, section) + ".name="
                     + Util.getNameFromRegistryName(Util.getChildValue(Main.REGISTRY_KEY, section))
                     + "\n");
         } else {
-            if (Util.doesChildValueEqual("itemGroup", Main.TYPE_KEY, section)) { // Util.doesChildValueEqual("itemGroup", Main.TYPE_KEY, section)
-                writer.append(Util.getChildValue(Main.TYPE_KEY, section) + "."
+            if (Util.doesChildValueEqual("itemGroup", Main.TYPE_KEY, section)) {
+                writer.write(Util.getChildValue(Main.TYPE_KEY, section) + "."
                         + Util.getChildValue(Main.REGISTRY_KEY, section) + "="
                         + Util.getChildValue(Main.NAME_KEY, section) + "\n");
             } else {
-                writer.append(Util.getChildValue(Main.TYPE_KEY, section) + "." + modid + "."
+                writer.write(Util.getChildValue(Main.TYPE_KEY, section) + "." + modid + "."
                         + Util.getChildValue(Main.REGISTRY_KEY, section) + ".name="
                         + Util.getChildValue(Main.NAME_KEY, section) + "\n");
             }
         }
+
+        lfe = true;
 
         writer.flush();
         writer.close();
@@ -131,21 +141,21 @@ public class Generators {
     public static void generateTexture(ConfigSection section, String modid) throws IOException {
         BufferedImage base = new BufferedImage(
                 Util.getChildValue(Main.SIZE_KEY, section) != null
-                        ? Integer.valueOf(Util.getChildValue(Main.SIZE_KEY, section)
-                                .split("x")[0])
+                        ? Integer.valueOf(Util.getChildValue(Main.SIZE_KEY, section).split("x")[0])
                         : 16,
-                Util.getChildValue(Main.SIZE_KEY, section) != null ? Integer
-                        .valueOf(Util.getChildValue(Main.SIZE_KEY, section).split("x")[1])
+                Util.getChildValue(Main.SIZE_KEY, section) != null
+                        ? Integer.valueOf(Util.getChildValue(Main.SIZE_KEY, section).split("x")[1])
                         : 16,
-                BufferedImage.TYPE_INT_ARGB);
+                6);
 
         for (int i = 0; true; i++) {
             if (section.getChild(Main.LAYER_KEY + "_" + i) == null)
                 break;
 
             ConfigNode layerNode = Main.CONFIG
-                    .getChild(Main.CONFIG.newConfigPath(
-                            Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
+                    .getChild(Main.CONFIG.newConfigPath(Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
+
+            System.err.println("| Writting layer: " + layerNode);
 
             if (!(layerNode instanceof ConfigSection))
                 break;
@@ -158,8 +168,9 @@ public class Generators {
                     Util.getChildValue(Main.REGISTRY_KEY, layer),
                     modid);
 
-            Util.writeLayer(base, image, Util.getChildValue(Main.TRANSPARENT_KEY, layer));
+            System.out.println("| Writting layer: " + layer.getName() + ", To: " + section.getName());
 
+            Util.writeLayer(base, image, Util.getChildValue(Main.TRANSPARENT_KEY, layer));
         }
 
         Util.saveImage(base, Util.getChildValue(Main.PATH_KEY, section),
