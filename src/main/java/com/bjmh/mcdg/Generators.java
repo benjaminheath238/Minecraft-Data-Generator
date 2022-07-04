@@ -113,7 +113,7 @@ public class Generators {
                     + Util.getNameFromRegistryName(Util.getChildValue(Main.REGISTRY_KEY, section))
                     + "\n");
         } else {
-            if (Util.getChildValue(Main.TYPE_KEY, section).equals("itemGroup")) {
+            if (Util.doesChildValueEqual("itemGroup", Main.TYPE_KEY, section)) { // Util.doesChildValueEqual("itemGroup", Main.TYPE_KEY, section)
                 writer.append(Util.getChildValue(Main.TYPE_KEY, section) + "."
                         + Util.getChildValue(Main.REGISTRY_KEY, section) + "="
                         + Util.getChildValue(Main.NAME_KEY, section) + "\n");
@@ -144,7 +144,8 @@ public class Generators {
                 break;
 
             ConfigNode layerNode = Main.CONFIG
-                    .getChild(Main.CONFIG.newConfigPath(Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
+                    .getChild(Main.CONFIG.newConfigPath(
+                            Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
 
             if (!(layerNode instanceof ConfigSection))
                 break;

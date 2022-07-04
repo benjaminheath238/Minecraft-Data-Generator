@@ -12,24 +12,34 @@ import com.bjmh.lib.io.config.ConfigOption;
 import com.bjmh.lib.io.config.ConfigSection;
 
 public class Util {
-    public static ConfigSection getChildAsConfigSection(String name, ConfigSection from) {
-        return (ConfigSection) from.getChild(name);
+    public static ConfigSection getChildAsConfigSection(String name, ConfigSection section) {
+        return (ConfigSection) section.getChild(name);
     }
 
-    public static ConfigOption getChildAsConfigOption(String name, ConfigSection from) {
-        return (ConfigOption) from.getChild(name);
+    public static ConfigOption getChildAsConfigOption(String name, ConfigSection section) {
+        return (ConfigOption) section.getChild(name);
     }
 
-    public static String getChildValue(String name, ConfigSection from) {
-        return ((ConfigOption) from.getChild(name)).getValue();
+    public static String getChildValue(String name, ConfigSection section) {
+        if (section.getChild(name) == null) {
+            return null;
+        } else {
+            return ((ConfigOption) section.getChild(name)).getValue();
+        }
+    }
+
+    public static boolean doesChildValueEqual(String value, String name, ConfigSection section) {
+        return value.equals(Util.getChildValue(name, section));
     }
 
     public static String createSystemPath(String name, String... path) {
         StringBuilder builder = new StringBuilder();
+
         for (String part : path) {
             builder.append(part);
             builder.append(Main.FILE_SEPARATOR);
         }
+
         return builder.append(name).toString();
     }
 
@@ -82,15 +92,15 @@ public class Util {
                 if (lc.getRGB() >= 0) // If the value is more then 0 it is transparent and will not work
                     continue;
 
-                if (transparent.equals(Main.FALSE_KEY)) { // If this layer is opaque
-                    base.setRGB(x, y, lc.getRGB()); // Write the exact layer colour
-                } else if (transparent.equals(Main.TRUE_KEY)) { // If this layer is transparent
+                if ((Main.TRUE_KEY).equals(transparent)) { // If this layer is transparent
                     Color bc = new Color(base.getRGB(x, y), true); // The colour at x,y ob the base
                     base.setRGB(x, y, new Color( // Take the average of the RGBA values
                             (lc.getRed() + bc.getRed()) / 2,
                             (lc.getGreen() + bc.getGreen()) / 2,
                             (lc.getBlue() + bc.getBlue()) / 2,
                             (lc.getAlpha() + bc.getAlpha()) / 2).getRGB());
+                } else { // The layer is opaque
+                    base.setRGB(x, y, lc.getRGB()); // Write the exact layer colour
                 }
             }
         }

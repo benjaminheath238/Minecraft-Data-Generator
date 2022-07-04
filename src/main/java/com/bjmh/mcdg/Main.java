@@ -85,8 +85,6 @@ public class Main {
             }
         });
 
-        System.err.println(CONFIG);
-
         CONFIG.foreach(new ConfigConsumer() {
 
             @Override
@@ -97,45 +95,42 @@ public class Main {
 
                 ConfigSection section = (ConfigSection) node;
 
-                if (section.getChild(TYPE_KEY) == null)
+                if (section.getChild(TYPE_KEY) == null) {
+                    System.err.println("| Skipping: No Type Key");
                     return;
-
-                if (section.getChild(LAYER_KEY) != null && Util.getChildValue(LAYER_KEY, section).equals(TRUE_KEY))
+                } else if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.LAYER_KEY, section)) {
                     return;
+                }
 
-                System.out.println("+- Parsing: " + section.getName());
+                System.out.println("+- Parsing: " + section.getName() + ", From: " + section.getParent().getName());
                 System.err.println("+- Parsing: " + section);
 
                 try {
-                    if (section.getChild(MODEL_KEY) != null
-                            && Util.getChildValue(MODEL_KEY, section).equals(TRUE_KEY)) {
+                    if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.MODEL_KEY, section)) {
                         System.out.println("| Generating Model");
                         System.err.println("| Generating Model");
-                        if (Util.getChildValue(TYPE_KEY, section).equals(TILE_KEY)) {
+                        if (Util.doesChildValueEqual(Main.TILE_KEY, Main.TYPE_KEY, section)) {
                             Generators.generateBlockModel(section, modid);
-                        } else if (Util.getChildValue(TYPE_KEY, section).equals(ITEM_KEY)) {
+                        } else if (Util.doesChildValueEqual(Main.ITEM_KEY, Main.TYPE_KEY, section)) {
                             Generators.generateItemModel(section, modid);
                         }
                     }
 
-                    if (section.getChild(BLOCKSTATE_KEY) != null
-                            && Util.getChildValue(BLOCKSTATE_KEY, section).equals(TRUE_KEY)) {
+                    if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.BLOCKSTATE_KEY, section)) {
                         System.out.println("| Generating Blockstate");
                         System.err.println("| Generating Blockstate");
-                        if (Util.getChildValue(TYPE_KEY, section).equals(TILE_KEY)) {
+                        if (Util.doesChildValueEqual(Main.TILE_KEY, Main.TYPE_KEY, section)) {
                             Generators.generateBlockstate(section, modid);
                         }
                     }
 
-                    if (section.getChild(LOCALE_KEY) != null
-                            && Util.getChildValue(LOCALE_KEY, section).equals(TRUE_KEY)) {
+                    if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.LOCALE_KEY, section)) {
                         System.out.println("| Generating Locale");
                         System.err.println("| Generating Locale");
                         Generators.generateLocalisation(section, modid);
                     }
 
-                    if ((section.getChild(TEXTURE_KEY) != null
-                            && Util.getChildValue(TEXTURE_KEY, section).equals(TRUE_KEY))) {
+                    if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.TEXTURE_KEY, section)) {
                         System.out.println("| Generating Textures");
                         System.err.println("| Generating Textures");
                         Generators.generateTexture(section, modid);
