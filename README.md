@@ -39,7 +39,7 @@ MCTG allows textures to be created using a system of layers. Layers can be added
 * `type` this option is required, it can be either `tile` if it's a block or `item` if it's an item
 * `layer` this option is required, it can be either `true` or `false`, _N can be appended to specify the layer index (0 =< N =< max int) and the value can then be the full name of the layer
 * `transparent` this option is required if this is a layer, it can either be `true` or `false`
-* `path` this option is not required, it's the relative path to the texture from `textures/blocks|items/`, `/` should be used on unix systems (Linux and Mac) and `\` should be used on Microsoft Windows systems
+* `path` this option is required, it's the relative path to the texture from `textures/blocks|items/`, `/` should be used on unix systems (Linux and Mac) and `\` should be used on Microsoft Windows systems
 * `size` this option is not required and is only needed if the texture is not 16x16
 * `texture` this option can be either true or false, it's not required
 
@@ -82,7 +82,7 @@ MCFG creates block and item models, blockstates and localisation files.
 * `model` this option can be either `true` or `false`, it's not required
 * `locale` this option can either be `true` or `false`, it's not required
 * `type` this option is required, it can either be `tile`, `item`, `itemGroup`
-* `path` this option is not required, it's the relative path to the texture from `textures/blocks|items/`, `/` should be used on unix systems (Linux and Mac) and `\` should be used Microsoft Windows systems
+* `path` this option is required, it's the relative path to the texture from `textures/blocks|items/`, `/` should be used on unix systems (Linux and Mac) and `\` should be used Microsoft Windows systems
 * `name` this option is not required, it's the name used in the locale files
 
 ### Example Config File
