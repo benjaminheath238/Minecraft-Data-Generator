@@ -104,8 +104,7 @@ public class Generators {
         File file = new File(
                 Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
                         Main.USER_DIR,
-                        "assets", modid, "models", "item",
-                        Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))));
+                        "assets", modid, "models", "item"));
 
         try (FileWriter writer = new FileWriter(file)) {
             writer.write("{\n");
