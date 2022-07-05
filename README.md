@@ -1,6 +1,6 @@
 # Minecraft Data Generator
 
-Minecraft data generator (MCDG) is a tool that allows for the quick and simple generation of textures, blockstates, item models, block models and localisation files. MCDG provides this functionality in two programmes that have been combined into one. The first programme allows for the generation of textures (MCTG) the second is responsible for all the other stated features (MCFG).
+Minecraft data generator (MCDG) is a tool that allows for the quick and simple generation of textures, blockstates, item models, block models and localisation files. MCDG provides this functionality in two programs that have been combined into one. The first program allows for the generation of textures (MCTG) the second is responsible for all the other stated features (MCFG).
 
 ---
 
@@ -8,25 +8,25 @@ Minecraft data generator (MCDG) is a tool that allows for the quick and simple g
 
 MCDG requires [Neutron](https://github.com/benjaminheath238/Neutron) and uses [Apache Maven](https://maven.apache.org/) as the build tool both of which must be installed for the following to function.
 
-1. Download the source code either directly from [github](https://github.com/benjaminheath238/Minecraft-Data-Generator/archive/refs/heads/master.zip) or by using `got clone https://github.com/benjaminheath238/Minecraft-Data-Generator.git`
-2. If the code was downloaded from github the zip file must be unzipped
+1. Download the source code either directly from [GitHub](https://github.com/benjaminheath238/Minecraft-Data-Generator/archive/refs/heads/master.zip) or by using `got clone https://github.com/benjaminheath238/Minecraft-Data-Generator.git`
+2. If the code was downloaded from GitHub the zip file must be unzipped
 3. Enter the downloaded folder containing the `pom.xml`
 4. Enter `mvn clean compile assembly:single` into the shell/terminal
 5. Collect the jar from `target/mcdg-X.x-jar-with-dependencies.jar`
-6. Run the jar using `java -jar mcdg-X.x-jar-with-dependencies.jar` in the folder containing the mod assets (`resources/assets/`)
+6. Run the jar using `java -jar mcdg-X.x-jar-with-dependencies.jar` in the folder containing the mod assets (`resources/`)
 
 ---
 
 ## General Infomation
 
-MCDG takes in the mod id and the path to a configuration file. This file is then parsed and the result is used in either MCTG or MCFG or both to create the files. The provided config file can contain the following
+MCDG requires a mod id and a file to function. The file should contain options for what the program is to do for more infomation of what options are allowed see section MCTG and MCFG. The File is parsed from top to bottom and supports the following;
 
-* sections defined by `[name]`
-* sub-sections defined by `[name.subname]` that support unlimited nesting (`[a.b...z...]`)
-* simple options defined by `key="value"`
-* complex options defined by `name=(key="value", key2="value"...)` that must be all on the same line
+* sections defined using `[name]`
+* sub-sections defined using `[name.subname]`
+* simple options defined using `key="value"`
+* complex options defined using `name=(key="value", key2="value"...)`
 
-Sub-sections and complex options will inherit parent sections simple options but if there is a conflict (options with the same name) the parent's option will not be inheritted. All types of options must be located in a section or sub-section. The naming used for sections and options is undefined and will not effect the output but the registery name is the key used for complex options and will effect output.
+Sub-sections and complex options will inherit the simple options of parents but only if it has not been redefined. Sub-sections can be nested any number of times. All options and must be located in a section. The naming of sections and options is not defined and up to the user but the naming used for complex options will be taken as the registry name and used for locating textures and creating files.
 
 ---
 
@@ -36,14 +36,16 @@ MCTG allows textures to be created using a system of layers. Layers can be added
 
 ### Options
 
-* `type` this option is required, it can be either `tile` if it's a block or `item` if it's an item
-* `layer` this option is required, it can be either `true` or `false`, _N can be appended to specify the layer index (0 =< N =< max int) and the value can then be the full name of the layer
-* `transparent` this option is required if this is a layer, it can either be `true` or `false`
-* `path` this option is required, it's the relative path to the texture from `textures/blocks|items/`, `/` should be used on unix systems (Linux and Mac) and `\` should be used on Microsoft Windows systems
-* `size` this option is not required and is only needed if the texture is not 16x16
-* `texture` this option can be either true or false, it's not required
+| Name          | Value                           | Information                                                     | Type   | Required |
+|---------------|---------------------------------|-----------------------------------------------------------------|--------|----------|
+| `type`        | `item`, `tile`                  | tiles are blocks                                                | Option | true     |
+| `layer`+_N    | `true`, `false`, A section name | If this is a layer, 0 < N < max int                             | Option | true     |
+| `path`        | Any String Value                | The relative path to the texture from `textures/blocks\|items/` | Option | true     |
+| `transparent` | `true`, `false`                 | Is this layer transparent or opaque                             | Option | false    |
+| `texture`     | `true`, `false`                 | Should a texture be created                                     | Task   | false    |
+| `size`        | NxN                             | The texture size, 0 < N < max int                               | option | false    |
 
-### Example Config File
+### Example File
 
 ```ini
 [Layers]
@@ -78,14 +80,15 @@ MCFG creates block and item models, blockstates and localisation files.
 
 ### Options
 
-* `blockstate` this option can be either `true` or `false`, it can only be used on complex options where `type` equals `tile` and is not required
-* `model` this option can be either `true` or `false`, it's not required
-* `locale` this option can either be `true` or `false`, it's not required
-* `type` this option is required, it can either be `tile`, `item`, `itemGroup`
-* `path` this option is required, it's the relative path to the texture from `textures/blocks|items/`, `/` should be used on unix systems (Linux and Mac) and `\` should be used Microsoft Windows systems
-* `name` this option is not required, it's the name used in the locale files
-
-### Example Config File
+| Name         | Value                       | Information                                                      | Type   | Required |
+|--------------|-----------------------------|------------------------------------------------------------------|--------|----------|
+| `type`       | `item`, `tile`, `itemGroup` | tiles are blocks, itemGroups are tabs                            | Option | true     |
+| `model`      | `true`, `false`             | Should a model file be generated                                 | Task   | false    |
+| `locale`     | `true`, `false`             | Should a lang key be generated                                   | Task   | false    |
+| `blockstate` | `true`, `false`             | Should a blockstate be generated                                 | Task   | false    |
+| `path`       | Any String Value            | The relative path to the texture from  `textures/blocks\|items/` | Option | true     |
+| `name`       | Any String Value            | The name to be used for localisation                             | option | false    |
+### Example File
 
 ```ini
 [Blocks]
@@ -93,11 +96,14 @@ type="tile"
 model="false"
 locale="true"
 blockstate="false"
+path="/"
 
-block_0=(name="Block #0")
+block_0=(name="Block #0", path="/0/")
 block_1=(name="Block #1", model="true")
 ```
 ---
 
 ## Licensing
-This programme is licensed under the GPLv2 the definition of which can be found in the LICENCE file or at the [website](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
+This software is licensed under the GPLv2 the definition of which can be found in the [LICENCE](LICENSE) file or at the [website](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
+
+MCDG is open source software. Minecraft is a registered trademark of Mojang. MCDG is not an official Minecraft product. It is not approved by or associated with Mojang.
