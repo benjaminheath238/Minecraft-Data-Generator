@@ -3,6 +3,7 @@ package com.bjmh.mcdg;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.util.Scanner;
 
 import com.bjmh.lib.io.config.ConfigConsumer;
@@ -37,16 +38,29 @@ public class Main {
     public static final String USER_DIR = System.getProperty("user.dir");
 
     public static final Scanner SCANNER = new Scanner(System.in);
-    public static final Configuration CONFIG = new Configuration("root");
+    public static final Configuration GLOBAL_CONFIG = new Configuration("global");
+    public static final Configuration MOD_CONFIG = new Configuration("mod");
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
         System.setErr(new PrintStream(new File(Util.createSystemPath("latest.log", USER_DIR))));
 
-        System.out.println("Enter The Mod ID");
-        String modid = SCANNER.nextLine();
+        Util.createConfigIfAbsent();
 
-        System.out.println("Enter Config File Path");
-        CONFIG.parse(SCANNER.nextLine(), new ParserMethod() {
+        GLOBAL_CONFIG.parse(Util.createSystemPath("mcdg.ini", USER_DIR), ParserMethods.INI_PARSER_SIMPLE);
+
+        String modid = Util.getChildValue("modid", GLOBAL_CONFIG);
+        if (modid == null) {
+            System.out.println("Enter The Mod ID");
+            modid = SCANNER.nextLine();
+        }
+
+        String path = Util.getChildValue("path", GLOBAL_CONFIG);
+        if (path == null) {
+            System.out.println("Enter Config File Path");
+            path = SCANNER.nextLine();
+        }
+
+        MOD_CONFIG.parse(path, new ParserMethod() {
             private ConfigSection section = null;
 
             public void parse(String line, Configuration config) {
@@ -80,55 +94,62 @@ public class Main {
             }
         });
 
-        CONFIG.foreach(new ConfigConsumer() {
+        MOD_CONFIG.foreach(new ModConfConsumer(modid));
+    }
 
-            @Override
-            public void accept(ConfigNode node) {
+    private static class ModConfConsumer implements ConfigConsumer {
+        private final String modid;
 
-                if (!(node instanceof ConfigSection && node.getType().equals(ConfigNode.Type.COMPLEX_OPTION)))
-                    return;
+        public ModConfConsumer(String modid) {
+            this.modid = modid;
+        }
 
-                ConfigSection section = (ConfigSection) node;
+        @Override
+        public void accept(ConfigNode node) {
 
-                if (section.getChild(TYPE_KEY) == null) {
-                    return;
-                } else if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LAYER_KEY, section)) {
-                    return;
-                }
+            if (!(node instanceof ConfigSection && node.getType().equals(ConfigNode.Type.COMPLEX_OPTION)))
+                return;
 
-                System.out.println("+- Parsing: " + section.getName() + ", From: " + section.getParent().getName());
+            ConfigSection section = (ConfigSection) node;
 
-                try {
-                    if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.MODEL_KEY, section)) {
-                        System.out.println("| Generating Model");
-                        if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
-                            Generators.generateBlockModel(section, modid);
-                        } else if (Util.doesChildValueEqual(Main.ITEM_VAL, Main.TYPE_KEY, section)) {
-                            Generators.generateItemModel(section, modid);
-                        }
-                    }
-
-                    if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.BLOCKSTATE_KEY, section)) {
-                        System.out.println("| Generating Blockstate");
-                        if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
-                            Generators.generateBlockstate(section, modid);
-                        }
-                    }
-
-                    if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LOCALE_KEY, section)) {
-                        System.out.println("| Generating Locale");
-                        Generators.generateLocalisation(section, modid);
-                    }
-
-                    if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.TEXTURE_KEY, section)) {
-                        System.out.println("| Generating Textures");
-                        Generators.generateTexture(section, modid);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            if (section.getChild(TYPE_KEY) == null) {
+                return;
+            } else if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LAYER_KEY, section)) {
+                return;
             }
 
-        });
-    }
+            System.out.println("+- Parsing: " + section.getName() + ", From: " + section.getParent().getName());
+
+            try {
+                if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.MODEL_KEY, section)) {
+                    System.out.println("| Generating Model");
+                    if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
+                        Generators.generateBlockModel(section, modid);
+                    } else if (Util.doesChildValueEqual(Main.ITEM_VAL, Main.TYPE_KEY, section)) {
+                        Generators.generateItemModel(section, modid);
+                    }
+                }
+
+                if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.BLOCKSTATE_KEY, section)) {
+                    System.out.println("| Generating Blockstate");
+                    if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
+                        Generators.generateBlockstate(section, modid);
+                    }
+                }
+
+                if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LOCALE_KEY, section)) {
+                    System.out.println("| Generating Locale");
+                    Generators.generateLocalisation(section, modid);
+                }
+
+                if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.TEXTURE_KEY, section)) {
+                    System.out.println("| Generating Textures");
+                    Generators.generateTexture(section, modid);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    };
 }

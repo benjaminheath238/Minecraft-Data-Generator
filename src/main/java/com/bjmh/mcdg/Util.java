@@ -2,10 +2,12 @@ package com.bjmh.mcdg;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -152,4 +154,25 @@ public class Util {
         writer.flush();
         writer.close();
     }
+
+    public static void copyFile(File old, File copy) throws IOException {
+        try (BufferedReader oldReader = new BufferedReader(new FileReader(old)); FileWriter copyWriter = new FileWriter(copy)) {
+            while (oldReader.ready()) {
+                copyWriter.write(oldReader.readLine());
+            }
+
+            copyWriter.flush();
+            copyWriter.close();
+            oldReader.close();
+        }
+    }
+
+    public static void createConfigIfAbsent() throws IOException, URISyntaxException {
+        File location = new File(createSystemPath("mcdg.ini", Main.USER_DIR));
+
+        if (location.exists()) return;
+
+        copyFile(new File(Main.class.getClassLoader().getResource("mcdg.ini").toURI()), location);
+    }
+
 }

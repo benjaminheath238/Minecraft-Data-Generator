@@ -154,8 +154,8 @@ public class Generators {
             if (section.getChild(Main.LAYER_KEY + "_" + i) == null)
                 break;
 
-            ConfigNode layerNode = Main.CONFIG
-                    .getChild(Main.CONFIG.newConfigPath(
+            ConfigNode layerNode = Main.MOD_CONFIG
+                    .getChild(Main.MOD_CONFIG.newConfigPath(
                             Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
 
             if (!(layerNode instanceof ConfigSection))
