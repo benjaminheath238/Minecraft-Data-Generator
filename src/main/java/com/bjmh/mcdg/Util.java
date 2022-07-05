@@ -145,17 +145,23 @@ public class Util {
         }
     }
 
-    public static void writeToFile(List<String> data, String path) throws IOException {
-        FileWriter writer = new FileWriter(new File(path));
-        for (String line : data) {
-            writer.write(line);
-            writer.write("\n");
+    public static void writeToFile(List<String> data, String path) {
+        try (FileWriter writer = new FileWriter(new File(path))) {
+            for (String line : data) {
+                writer.write(line);
+                writer.write("\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("| A Exception occured while writing to file: " + path);
+            System.err.println("{");
+            e.printStackTrace(System.err);
+            System.err.println("}");
         }
-        writer.flush();
-        writer.close();
     }
 
-    public static void copyFile(File old, File copy) throws IOException {
+    public static void copyFile(File old, File copy) {
         try (BufferedReader oldReader = new BufferedReader(new FileReader(old)); FileWriter copyWriter = new FileWriter(copy)) {
             while (oldReader.ready()) {
                 copyWriter.write(oldReader.readLine());
@@ -164,6 +170,11 @@ public class Util {
             copyWriter.flush();
             copyWriter.close();
             oldReader.close();
+        } catch (IOException e) {
+            System.err.println("| A Exception occured while copying file: " + old + ", to: " + copy);
+            System.err.println("{");
+            e.printStackTrace(System.err);
+            System.err.println("}");
         }
     }
 
