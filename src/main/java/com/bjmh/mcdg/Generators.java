@@ -96,8 +96,7 @@ public class Generators {
     }
 
     public static void generateItemModel(ConfigSection section, String modid) {
-        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "models", "item",
-                Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section)))).mkdirs();
+        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "models", "item")).mkdirs();
 
         System.err.println("| Creating Item Model File");
 
