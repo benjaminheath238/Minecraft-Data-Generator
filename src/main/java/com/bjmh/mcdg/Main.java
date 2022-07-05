@@ -120,36 +120,31 @@ public class Main {
 
             System.out.println("+- Parsing: " + section.getName() + ", From: " + section.getParent().getName());
 
-            try {
-                if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.MODEL_KEY, section)) {
-                    System.out.println("| Generating Model");
-                    if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
-                        Generators.generateBlockModel(section, modid);
-                    } else if (Util.doesChildValueEqual(Main.ITEM_VAL, Main.TYPE_KEY, section)) {
-                        Generators.generateItemModel(section, modid);
-                    }
+            if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.MODEL_KEY, section)) {
+                System.out.println("| Generating Model");
+                if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
+                    Generators.generateBlockModel(section, modid);
+                } else if (Util.doesChildValueEqual(Main.ITEM_VAL, Main.TYPE_KEY, section)) {
+                    Generators.generateItemModel(section, modid);
                 }
+            }
 
-                if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.BLOCKSTATE_KEY, section)) {
-                    System.out.println("| Generating Blockstate");
-                    if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
-                        Generators.generateBlockstate(section, modid);
-                    }
+            if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.BLOCKSTATE_KEY, section)) {
+                System.out.println("| Generating Blockstate");
+                if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
+                    Generators.generateBlockstate(section, modid);
                 }
+            }
 
-                if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LOCALE_KEY, section)) {
-                    System.out.println("| Generating Locale");
-                    Generators.generateLocalisation(section, modid);
-                }
+            if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LOCALE_KEY, section)) {
+                System.out.println("| Generating Locale");
+                Generators.generateLocalisation(section, modid);
+            }
 
-                if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.TEXTURE_KEY, section)) {
-                    System.out.println("| Generating Textures");
-                    Generators.generateTexture(section, modid);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.TEXTURE_KEY, section)) {
+                System.out.println("| Generating Textures");
+                Generators.generateTexture(section, modid);
             }
         }
-
     };
 }
