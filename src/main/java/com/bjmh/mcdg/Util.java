@@ -2,13 +2,10 @@ package com.bjmh.mcdg;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
@@ -145,45 +142,16 @@ public class Util {
         }
     }
 
-    public static void writeToFile(List<String> data, String path) {
-        try (FileWriter writer = new FileWriter(new File(path))) {
-            for (String line : data) {
-                writer.write(line);
-                writer.write("\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            System.err.println("| A Exception occured while writing to file: " + path);
-            System.err.println("{");
-            e.printStackTrace(System.err);
-            System.err.println("}");
-        }
-    }
+    public static void copyFileFromJar(String name) {
+        try (InputStream in = Main.class.getClassLoader().getResource(name).openStream();
+                FileOutputStream out = new FileOutputStream(createSystemPath(name, Main.USER_DIR))) {
 
-    public static void copyFile(File old, File copy) {
-        try (BufferedReader oldReader = new BufferedReader(new FileReader(old)); FileWriter copyWriter = new FileWriter(copy)) {
-            while (oldReader.ready()) {
-                copyWriter.write(oldReader.readLine());
+            while (in.available() > 0) {
+                out.write(in.readAllBytes());
             }
 
-            copyWriter.flush();
-            copyWriter.close();
-            oldReader.close();
         } catch (IOException e) {
-            System.err.println("| A Exception occured while copying file: " + old + ", to: " + copy);
-            System.err.println("{");
-            e.printStackTrace(System.err);
-            System.err.println("}");
+            e.printStackTrace();
         }
     }
-
-    public static void createConfigIfAbsent() throws IOException, URISyntaxException {
-        File location = new File(createSystemPath("mcdg.ini", Main.USER_DIR));
-
-        if (location.exists()) return;
-
-        copyFile(new File(Main.class.getClassLoader().getResource("mcdg.ini").toURI()), location);
-    }
-
 }

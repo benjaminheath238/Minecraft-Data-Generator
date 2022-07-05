@@ -50,9 +50,8 @@ public class Generators {
         } catch (IOException e) {
             System.err.println("| A Exception occured while generating blockstate for: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
-            System.err.println("{");
+
             e.printStackTrace(System.err);
-            System.err.println("}");
         }
     }
 
@@ -69,7 +68,8 @@ public class Generators {
                         Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))));
 
         try (FileWriter writer = new FileWriter(file)) {
-            String SIDE = modid + ":blocks" + Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))
+            String SIDE = modid + ":blocks"
+                    + Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))
                     + Util.getChildValue(Main.REGISTRY_KEY, section) + "\"";
 
             writer.write("{\n");
@@ -90,9 +90,8 @@ public class Generators {
         } catch (IOException e) {
             System.err.println("| A Exception occured while generating block model for: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
-            System.err.println("{");
+
             e.printStackTrace(System.err);
-            System.err.println("}");
         }
     }
 
@@ -114,7 +113,8 @@ public class Generators {
             writer.write("  \"textures\": {\n");
             writer.write(
                     "    \"layer0\": \"" + modid + ":items"
-                            + Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))
+                            + Util.addPathCorrection(
+                                    Util.getChildValue(Main.PATH_KEY, section))
                             + Util.getChildValue(Main.REGISTRY_KEY, section) + "\"\n");
             writer.write("  }\n");
             writer.write("}");
@@ -124,9 +124,8 @@ public class Generators {
         } catch (IOException e) {
             System.err.println("| A Exception occured while generating item model for: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
-            System.err.println("{");
+
             e.printStackTrace(System.err);
-            System.err.println("}");
         }
     }
 
@@ -145,7 +144,8 @@ public class Generators {
             if (section.getChild(Main.NAME_KEY) == null) {
                 writer.write(Util.getChildValue(Main.TYPE_KEY, section) + "." + modid + "."
                         + Util.getChildValue(Main.REGISTRY_KEY, section) + ".name="
-                        + Util.getNameFromRegistryName(Util.getChildValue(Main.REGISTRY_KEY, section))
+                        + Util.getNameFromRegistryName(
+                                Util.getChildValue(Main.REGISTRY_KEY, section))
                         + "\n");
             } else {
                 if (Util.doesChildValueEqual("itemGroup", Main.TYPE_KEY, section)) {
@@ -166,9 +166,8 @@ public class Generators {
         } catch (IOException e) {
             System.err.println("| A Exception occured while generating localisation for: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
-            System.err.println("{");
+
             e.printStackTrace(System.err);
-            System.err.println("}");
         }
     }
 
@@ -184,8 +183,9 @@ public class Generators {
                         : 16,
                 6);
 
-        System.err.println("| Base Image Created: Size = " + base.getWidth() + "x" + base.getHeight() + ", Type = "
-                + base.getType());
+        System.err.println(
+                "| Base Image Created: Size = " + base.getWidth() + "x" + base.getHeight() + ", Type = "
+                        + base.getType());
 
         for (int i = 0; true; i++) {
             if (section.getChild(Main.LAYER_KEY + "_" + i) == null)
@@ -212,9 +212,8 @@ public class Generators {
             } catch (IOException e) {
                 System.err.println("| A Exception occured while loading layer: "
                         + Util.getChildValue(Main.REGISTRY_KEY, layer));
-                System.err.println("{");
+
                 e.printStackTrace(System.err);
-                System.err.println("}");
             }
 
             System.out.println("| Writting layer: " + layer.getName() + ", To: " + section.getName());
@@ -232,9 +231,8 @@ public class Generators {
         } catch (IOException e) {
             System.err.println("| A Exception occured while saving texture: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
-            System.err.println("{");
+
             e.printStackTrace(System.err);
-            System.err.println("}");
         }
     }
 }

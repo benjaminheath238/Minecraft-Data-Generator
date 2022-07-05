@@ -44,8 +44,10 @@ public class Main {
     public static void main(String[] args) throws IOException, URISyntaxException {
         System.setErr(new PrintStream(new File(Util.createSystemPath("latest.log", USER_DIR))));
 
-        Util.createConfigIfAbsent();
+        System.err.println("+- Creating Config File If Absent");
+        Util.copyFileFromJar("mcdg.ini");
 
+        System.err.println("+- Loading Config File");
         GLOBAL_CONFIG.parse(Util.createSystemPath("mcdg.ini", USER_DIR), ParserMethods.INI_PARSER_SIMPLE);
 
         String modid = Util.getChildValue("modid", GLOBAL_CONFIG);
@@ -60,6 +62,7 @@ public class Main {
             path = SCANNER.nextLine();
         }
 
+        System.err.println("+- Parsing User Config File");
         MOD_CONFIG.parse(path, new ParserMethod() {
             private ConfigSection section = null;
 
@@ -94,6 +97,7 @@ public class Main {
             }
         });
 
+        System.err.println("+- Iterating User Config File");
         MOD_CONFIG.foreach(new ModConfConsumer(modid));
     }
 
