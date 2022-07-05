@@ -158,8 +158,6 @@ public class Generators {
                     .getChild(Main.CONFIG.newConfigPath(
                             Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
 
-            System.err.println("| Writting layer: " + layerNode);
-
             if (!(layerNode instanceof ConfigSection))
                 break;
 

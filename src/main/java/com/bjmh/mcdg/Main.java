@@ -14,29 +14,24 @@ import com.bjmh.lib.io.config.ParserMethod;
 import com.bjmh.lib.io.config.ParserMethods;
 
 public class Main {
-    // Internal option keys
-    public static final String REGISTRY_KEY = "registry"; // Should not be used as an option
+    public static final String REGISTRY_KEY = "registry";
 
-    // External task keys
-    public static final String MODEL_KEY = "model"; // true|false
-    public static final String LOCALE_KEY = "locale"; // true|false
-    public static final String BLOCKSTATE_KEY = "blockstate"; // true|false
-    public static final String TEXTURE_KEY = "texture"; // true|false
+    public static final String MODEL_KEY = "model";
+    public static final String LOCALE_KEY = "locale";
+    public static final String BLOCKSTATE_KEY = "blockstate";
+    public static final String TEXTURE_KEY = "texture";
 
-    // External option keys
-    public static final String TYPE_KEY = "type"; // tile|item|itemGroup
-    public static final String NAME_KEY = "name"; // Any string
-    public static final String PATH_KEY = "path"; // relative path from textures/blocks|items/
-    public static final String LAYER_KEY = "layer"; // true|false by appending _N this will be treated as a layer to add
-                                                    // 0 < N < max int
-    public static final String TRANSPARENT_KEY = "transparent"; // true|false
-    public static final String SIZE_KEY = "size"; // true|false
+    public static final String TYPE_KEY = "type";
+    public static final String NAME_KEY = "name";
+    public static final String PATH_KEY = "path";
+    public static final String LAYER_KEY = "layer";
+    public static final String TRANSPARENT_KEY = "transparent";
+    public static final String SIZE_KEY = "size";
 
-    // External option and task values
-    public static final String TRUE_KEY = "true"; // Any other value will be taken as false
-    public static final String FALSE_KEY = "false"; // Any other value will be taken as false
-    public static final String TILE_KEY = "tile";
-    public static final String ITEM_KEY = "item";
+    public static final String TRUE_VAL = "true";
+    public static final String FALSE_VAL = "false";
+    public static final String TILE_VAL = "tile";
+    public static final String ITEM_VAL = "item";
 
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
     public static final String USER_DIR = System.getProperty("user.dir");
@@ -90,51 +85,43 @@ public class Main {
             @Override
             public void accept(ConfigNode node) {
 
-                System.err.println("+- Parsing: " + node);
-
                 if (!(node instanceof ConfigSection && node.getType().equals(ConfigNode.Type.COMPLEX_OPTION)))
                     return;
 
                 ConfigSection section = (ConfigSection) node;
 
                 if (section.getChild(TYPE_KEY) == null) {
-                    System.err.println("| Skipping: No Type Key");
                     return;
-                } else if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.LAYER_KEY, section)) {
+                } else if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LAYER_KEY, section)) {
                     return;
                 }
 
                 System.out.println("+- Parsing: " + section.getName() + ", From: " + section.getParent().getName());
-                System.err.println("+- Generating: " + section);
 
                 try {
-                    if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.MODEL_KEY, section)) {
+                    if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.MODEL_KEY, section)) {
                         System.out.println("| Generating Model");
-                        System.err.println("| Generating Model");
-                        if (Util.doesChildValueEqual(Main.TILE_KEY, Main.TYPE_KEY, section)) {
+                        if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
                             Generators.generateBlockModel(section, modid);
-                        } else if (Util.doesChildValueEqual(Main.ITEM_KEY, Main.TYPE_KEY, section)) {
+                        } else if (Util.doesChildValueEqual(Main.ITEM_VAL, Main.TYPE_KEY, section)) {
                             Generators.generateItemModel(section, modid);
                         }
                     }
 
-                    if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.BLOCKSTATE_KEY, section)) {
+                    if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.BLOCKSTATE_KEY, section)) {
                         System.out.println("| Generating Blockstate");
-                        System.err.println("| Generating Blockstate");
-                        if (Util.doesChildValueEqual(Main.TILE_KEY, Main.TYPE_KEY, section)) {
+                        if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
                             Generators.generateBlockstate(section, modid);
                         }
                     }
 
-                    if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.LOCALE_KEY, section)) {
+                    if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LOCALE_KEY, section)) {
                         System.out.println("| Generating Locale");
-                        System.err.println("| Generating Locale");
                         Generators.generateLocalisation(section, modid);
                     }
 
-                    if (Util.doesChildValueEqual(Main.TRUE_KEY, Main.TEXTURE_KEY, section)) {
+                    if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.TEXTURE_KEY, section)) {
                         System.out.println("| Generating Textures");
-                        System.err.println("| Generating Textures");
                         Generators.generateTexture(section, modid);
                     }
                 } catch (IOException e) {

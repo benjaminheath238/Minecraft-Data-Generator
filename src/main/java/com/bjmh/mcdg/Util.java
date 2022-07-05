@@ -88,21 +88,21 @@ public class Util {
     }
 
     public static BufferedImage writeLayer(BufferedImage base, BufferedImage layer, String transparent) {
-        for (int x = 0; x < base.getWidth(); x++) { // Iterate through x-axis
-            for (int y = 0; y < base.getHeight(); y++) { // Iterate throught the y-axis
-                Color lc = new Color(layer.getRGB(x, y), true); // The colour at x,y on the layer
-                if (lc.getRGB() >= 0) // If the value is more then 0 it is transparent and will not work
+        for (int x = 0; x < base.getWidth(); x++) {
+            for (int y = 0; y < base.getHeight(); y++) {
+                Color lc = new Color(layer.getRGB(x, y), true);
+                if (lc.getRGB() >= 0)
                     continue;
 
-                if ((Main.TRUE_KEY).equals(transparent)) { // If this layer is transparent
-                    Color bc = new Color(base.getRGB(x, y), true); // The colour at x,y ob the base
-                    base.setRGB(x, y, new Color( // Take the average of the RGBA values
+                if ((Main.TRUE_VAL).equals(transparent)) {
+                    Color bc = new Color(base.getRGB(x, y), true);
+                    base.setRGB(x, y, new Color(
                             (lc.getRed() + bc.getRed()) / 2,
                             (lc.getGreen() + bc.getGreen()) / 2,
                             (lc.getBlue() + bc.getBlue()) / 2,
                             (lc.getAlpha() + bc.getAlpha()) / 2).getRGB());
-                } else { // The layer is opaque
-                    base.setRGB(x, y, lc.getRGB()); // Write the exact layer colour
+                } else {
+                    base.setRGB(x, y, lc.getRGB());
                 }
             }
         }
@@ -118,8 +118,6 @@ public class Util {
 
         File file = new File(createSystemPath(name + ".png", Main.USER_DIR, "assets", modid, "textures", type, path));
 
-        System.err.println("| Loading Image: " + file);
-
         return ImageIO.read(file);
     }
 
@@ -130,8 +128,6 @@ public class Util {
         new File(createSystemPath("", Main.USER_DIR, "assets", modid, "textures", type, path)).mkdirs();
 
         File file = new File(createSystemPath(name + ".png", Main.USER_DIR, "assets", modid, "textures", type, path));
-
-        System.err.println("| Saving Image: " + file);
 
         ImageIO.write(image, "png", file);
     }
