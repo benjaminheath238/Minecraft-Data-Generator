@@ -14,6 +14,8 @@ public class Generators {
     public static void generateBlockstate(ConfigSection section, String modid) {
         new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "blockstates")).mkdirs();
 
+        System.err.println("| Creating Blockstate File");
+
         File file = new File(Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
                 Main.USER_DIR, "assets", modid, "blockstates"));
 
@@ -58,6 +60,8 @@ public class Generators {
         new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "models",
                 "block", Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section)))).mkdirs();
 
+        System.err.println("| Creating Block Model File");
+
         File file = new File(
                 Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
                         Main.USER_DIR,
@@ -96,6 +100,8 @@ public class Generators {
         new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "models", "item",
                 Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section)))).mkdirs();
 
+        System.err.println("| Creating Item Model File");
+
         File file = new File(
                 Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
                         Main.USER_DIR,
@@ -128,9 +134,13 @@ public class Generators {
 
         new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "lang")).mkdirs();
 
+        System.err.println("| Added Locale Key-Value Pair");
+
         File file = new File(Util.createSystemPath("en_us.lang", Main.USER_DIR, "assets", modid, "lang"));
+
         if (lfe == false)
             file.delete();
+
         try (FileWriter writer = new FileWriter(file, true)) {
             if (section.getChild(Main.NAME_KEY) == null) {
                 writer.write(Util.getChildValue(Main.TYPE_KEY, section) + "." + modid + "."
@@ -174,6 +184,9 @@ public class Generators {
                         : 16,
                 6);
 
+        System.err.println("| Base Image Created: Size = " + base.getWidth() + "x" + base.getHeight() + ", Type = "
+                + base.getType());
+
         for (int i = 0; true; i++) {
             if (section.getChild(Main.LAYER_KEY + "_" + i) == null)
                 break;
@@ -189,6 +202,8 @@ public class Generators {
 
             BufferedImage image = null;
             try {
+                System.err.println("| Loading Layer From File: " + layer.getName());
+
                 image = Util.loadImage(
                         Util.getChildValue(Main.PATH_KEY, layer),
                         Util.getPathFromType(Util.getChildValue(Main.TYPE_KEY, layer)),
@@ -206,6 +221,8 @@ public class Generators {
 
             Util.writeLayer(base, image, Util.getChildValue(Main.TRANSPARENT_KEY, layer));
         }
+
+        System.err.println("| Saving Image To File");
 
         try {
             Util.saveImage(base, Util.getChildValue(Main.PATH_KEY, section),

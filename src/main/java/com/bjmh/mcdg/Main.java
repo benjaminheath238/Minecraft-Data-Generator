@@ -107,6 +107,8 @@ public class Main {
         @Override
         public void accept(ConfigNode node) {
 
+            System.err.println("+- Loading: " + node);
+
             if (!(node instanceof ConfigSection && node.getType().equals(ConfigNode.Type.COMPLEX_OPTION)))
                 return;
 
@@ -118,9 +120,11 @@ public class Main {
                 return;
             }
 
+            System.err.println("| Parsing");
             System.out.println("+- Parsing: " + section.getName() + ", From: " + section.getParent().getName());
 
             if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.MODEL_KEY, section)) {
+                System.err.println("| Generating Model");
                 System.out.println("| Generating Model");
                 if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
                     Generators.generateBlockModel(section, modid);
@@ -130,6 +134,7 @@ public class Main {
             }
 
             if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.BLOCKSTATE_KEY, section)) {
+                System.err.println("| Generating Blockstate");
                 System.out.println("| Generating Blockstate");
                 if (Util.doesChildValueEqual(Main.TILE_VAL, Main.TYPE_KEY, section)) {
                     Generators.generateBlockstate(section, modid);
@@ -137,11 +142,13 @@ public class Main {
             }
 
             if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LOCALE_KEY, section)) {
+                System.err.println("| Generating Locale");
                 System.out.println("| Generating Locale");
                 Generators.generateLocalisation(section, modid);
             }
 
             if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.TEXTURE_KEY, section)) {
+                System.err.println("| Generating Textures");
                 System.out.println("| Generating Textures");
                 Generators.generateTexture(section, modid);
             }
