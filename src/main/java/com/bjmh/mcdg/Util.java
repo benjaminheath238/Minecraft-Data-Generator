@@ -143,8 +143,12 @@ public class Util {
     }
 
     public static void copyFileFromJar(String name) {
+        File file = new File(createSystemPath(name, Main.USER_DIR));
+
+        if (file.exists()) return;
+
         try (InputStream in = Main.class.getClassLoader().getResource(name).openStream();
-                FileOutputStream out = new FileOutputStream(createSystemPath(name, Main.USER_DIR))) {
+                FileOutputStream out = new FileOutputStream(file)) {
 
             while (in.available() > 0) {
                 out.write(in.readAllBytes());
