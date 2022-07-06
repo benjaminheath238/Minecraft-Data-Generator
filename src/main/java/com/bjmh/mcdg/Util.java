@@ -13,6 +13,9 @@ import com.bjmh.lib.io.config.ConfigOption;
 import com.bjmh.lib.io.config.ConfigSection;
 
 public class Util {
+    private Util() {
+    }
+
     public static ConfigSection getChildAsConfigSection(String name, ConfigSection section) {
         return (ConfigSection) section.getChild(name);
     }

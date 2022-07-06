@@ -67,7 +67,7 @@ public class Main {
 
         System.err.println("+- Parsing User Config File");
         MOD_CONFIG.parse(path, new ParserMethod() {
-            private ConfigSection section = null;
+            private ConfigSection current = null;
 
             public void parse(String line, Configuration config) {
                 line = ParserMethods.removeComments(line);
@@ -76,23 +76,33 @@ public class Main {
                     return;
 
                 if (ParserMethods.isSubHeader(line)) {
-                    section = ParserMethods.inheritOptions(ParserMethods.parseSubHeader(line, config));
+                    current = ParserMethods.inheritOptions(ParserMethods.parseSubHeader(line, config));
                 } else if (ParserMethods.isHeader(line)) {
-                    section = ParserMethods.parseHeader(line, config);
+                    current = ParserMethods.parseHeader(line, config);
                 } else if (ParserMethods.isComplexOption(line)) {
-                    line = line.replaceAll("[\\(\\)]", "").trim();
-                    ConfigSection complex = ParserMethods
-                            .inheritOptions(ParserMethods.parseComplexOption(line, config));
+                    ConfigSection section = ParserMethods.inheritOptions(
+                            ParserMethods.parseComplexOption(line,
+                                    ParserMethods.firstNonNull(current, config)));
 
-                    ConfigOption option = new ConfigOption(complex, REGISTRY_KEY, ConfigNode.Type.SIMPLE_OPTION,
-                            complex.getName());
-
-                    complex.addChild(option);
-
-                    section.addChild(complex);
-                } else {
                     section.addChild(
-                            ParserMethods.parseSimpleOption(line, ParserMethods.firstNonNull(section, config)));
+                            new ConfigOption(section, REGISTRY_KEY, ConfigNode.Type.SIMPLE_OPTION, section.getName()));
+
+                    ParserMethods.firstNonNull(current, config)
+                            .addChild(section);
+                } else if (ParserMethods.isNullMapOrArray(line)) {
+                    // Catch the case of an empty array or map
+                } else if (ParserMethods.isMap(line)) {
+                    ParserMethods.firstNonNull(current, config)
+                            .addChild(ParserMethods.inheritOptions(
+                                    ParserMethods.parseMap(line, ParserMethods.firstNonNull(current, config))));
+                } else if (ParserMethods.isArray(line)) {
+                    ParserMethods.firstNonNull(current, config)
+                            .addChild(ParserMethods.inheritOptions(
+                                    ParserMethods.parseArray(line, ParserMethods.firstNonNull(current, config))));
+                } else {
+                    ParserMethods.firstNonNull(current, config)
+                            .addChild(
+                                    ParserMethods.parseSimpleOption(line, ParserMethods.firstNonNull(current, config)));
                 }
             }
         });
@@ -118,7 +128,11 @@ public class Main {
 
             ConfigSection section = (ConfigSection) node;
 
-            if (section.getChild(TYPE_KEY) == null || Util.doesChildValueEqual(Main.TRUE_VAL, Main.LAYER_KEY, section)) {
+            if (section.getChild(TYPE_KEY) == null) {
+                System.err.println("| Skipping As There Is No Type Key");
+                return;
+            } else if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LAYER_KEY, section)) {
+                System.err.println("| Skipping As This Is A Layer");
                 return;
             }
 
