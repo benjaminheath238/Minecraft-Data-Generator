@@ -3,7 +3,6 @@ package com.bjmh.mcdg;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URISyntaxException;
 import java.util.Scanner;
 
 import com.bjmh.lib.io.config.ConfigConsumer;
@@ -34,6 +33,10 @@ public class Main {
     public static final String TILE_VAL = "tile";
     public static final String ITEM_VAL = "item";
 
+    public static final String ASSETS_PATH = "assets";
+    public static final String JSON_PATH = ".json";
+    public static final String MODELS_PATH = "models";
+
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
     public static final String USER_DIR = System.getProperty("user.dir");
 
@@ -41,7 +44,7 @@ public class Main {
     public static final Configuration GLOBAL_CONFIG = new Configuration("global");
     public static final Configuration MOD_CONFIG = new Configuration("mod");
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) throws IOException {
         System.setErr(new PrintStream(new File(Util.createSystemPath("latest.log", USER_DIR))));
 
         System.err.println("+- Creating Config File If Absent");
@@ -73,26 +76,23 @@ public class Main {
                     return;
 
                 if (ParserMethods.isSubHeader(line)) {
-                    section = ParserMethods.inheritOptions(ParserMethods.parseSubHeader(line, config), config);
+                    section = ParserMethods.inheritOptions(ParserMethods.parseSubHeader(line, config));
                 } else if (ParserMethods.isHeader(line)) {
                     section = ParserMethods.parseHeader(line, config);
                 } else if (ParserMethods.isComplexOption(line)) {
                     line = line.replaceAll("[\\(\\)]", "").trim();
                     ConfigSection complex = ParserMethods
-                            .inheritOptions(ParserMethods.parseComplexOption(line, config, section), config);
+                            .inheritOptions(ParserMethods.parseComplexOption(line, config));
 
-                    ConfigOption option = config.newConfigOption();
-
-                    option.setName(REGISTRY_KEY);
-                    option.setParent(complex);
-                    option.setType(ConfigNode.Type.SIMPLE_OPTION);
-                    option.setValue(complex.getName());
+                    ConfigOption option = new ConfigOption(complex, REGISTRY_KEY, ConfigNode.Type.SIMPLE_OPTION,
+                            complex.getName());
 
                     complex.addChild(option);
 
                     section.addChild(complex);
                 } else {
-                    section.addChild(ParserMethods.parseSimpleOption(line, config, section == null ? config : section));
+                    section.addChild(
+                            ParserMethods.parseSimpleOption(line, ParserMethods.firstNonNull(section, config)));
                 }
             }
         });
@@ -118,9 +118,7 @@ public class Main {
 
             ConfigSection section = (ConfigSection) node;
 
-            if (section.getChild(TYPE_KEY) == null) {
-                return;
-            } else if (Util.doesChildValueEqual(Main.TRUE_VAL, Main.LAYER_KEY, section)) {
+            if (section.getChild(TYPE_KEY) == null || Util.doesChildValueEqual(Main.TRUE_VAL, Main.LAYER_KEY, section)) {
                 return;
             }
 
@@ -157,5 +155,5 @@ public class Main {
                 Generators.generateTexture(section, modid);
             }
         }
-    };
+    }
 }

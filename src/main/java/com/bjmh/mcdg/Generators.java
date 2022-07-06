@@ -6,18 +6,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import com.bjmh.lib.io.config.ConfigNode;
+import com.bjmh.lib.io.config.ConfigPath;
 import com.bjmh.lib.io.config.ConfigSection;
 
 public class Generators {
+    private Generators() {
+    }
+
     private static boolean lfe = false;
 
     public static void generateBlockstate(ConfigSection section, String modid) {
-        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "blockstates")).mkdirs();
+        new File(Util.createSystemPath("", Main.USER_DIR, Main.ASSETS_PATH, modid, "blockstates")).mkdirs();
 
         System.err.println("| Creating Blockstate File");
 
-        File file = new File(Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
-                Main.USER_DIR, "assets", modid, "blockstates"));
+        File file = new File(Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + Main.JSON_PATH,
+                Main.USER_DIR, Main.ASSETS_PATH, modid, "blockstates"));
 
         try (FileWriter writer = new FileWriter(file)) {
             writer.write("{\n");
@@ -46,7 +50,6 @@ public class Generators {
             writer.write("}");
 
             writer.flush();
-            writer.close();
         } catch (IOException e) {
             System.err.println("| A Exception occured while generating blockstate for: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
@@ -56,37 +59,36 @@ public class Generators {
     }
 
     public static void generateBlockModel(ConfigSection section, String modid) {
-        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "models",
+        new File(Util.createSystemPath("", Main.USER_DIR, Main.ASSETS_PATH, modid, Main.MODELS_PATH,
                 "block", Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section)))).mkdirs();
 
         System.err.println("| Creating Block Model File");
 
         File file = new File(
-                Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
+                Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + Main.JSON_PATH,
                         Main.USER_DIR,
-                        "assets", modid, "models", "block",
+                        Main.ASSETS_PATH, modid, Main.MODELS_PATH, "block",
                         Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))));
 
         try (FileWriter writer = new FileWriter(file)) {
-            String SIDE = modid + ":blocks"
+            String side = modid + ":blocks"
                     + Util.addPathCorrection(Util.getChildValue(Main.PATH_KEY, section))
                     + Util.getChildValue(Main.REGISTRY_KEY, section) + "\"";
 
             writer.write("{\n");
             writer.write("  \"parent\": \"block/cube\",\n");
             writer.write("  \"textures\": {\n");
-            writer.write("    \"particle\": \"" + SIDE + ",\n");
-            writer.write("    \"down\": \"" + SIDE + ",\n");
-            writer.write("    \"up\": \"" + SIDE + ",\n");
-            writer.write("    \"east\": \"" + SIDE + ",\n");
-            writer.write("    \"west\": \"" + SIDE + ",\n");
-            writer.write("    \"north\": \"" + SIDE + ",\n");
-            writer.write("    \"south\": \"" + SIDE + "\n");
+            writer.write("    \"particle\": \"" + side + ",\n");
+            writer.write("    \"down\": \"" + side + ",\n");
+            writer.write("    \"up\": \"" + side + ",\n");
+            writer.write("    \"east\": \"" + side + ",\n");
+            writer.write("    \"west\": \"" + side + ",\n");
+            writer.write("    \"north\": \"" + side + ",\n");
+            writer.write("    \"south\": \"" + side + "\n");
             writer.write("  }\n");
             writer.write("}");
 
             writer.flush();
-            writer.close();
         } catch (IOException e) {
             System.err.println("| A Exception occured while generating block model for: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
@@ -96,14 +98,14 @@ public class Generators {
     }
 
     public static void generateItemModel(ConfigSection section, String modid) {
-        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "models", "item")).mkdirs();
+        new File(Util.createSystemPath("", Main.USER_DIR, Main.ASSETS_PATH, modid, Main.MODELS_PATH, "item")).mkdirs();
 
         System.err.println("| Creating Item Model File");
 
         File file = new File(
-                Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + ".json",
+                Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + Main.JSON_PATH,
                         Main.USER_DIR,
-                        "assets", modid, "models", "item"));
+                        Main.ASSETS_PATH, modid, Main.MODELS_PATH, "item"));
 
         try (FileWriter writer = new FileWriter(file)) {
             writer.write("{\n");
@@ -118,7 +120,6 @@ public class Generators {
             writer.write("}");
 
             writer.flush();
-            writer.close();
         } catch (IOException e) {
             System.err.println("| A Exception occured while generating item model for: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
@@ -129,14 +130,21 @@ public class Generators {
 
     public static void generateLocalisation(ConfigSection section, String modid) {
 
-        new File(Util.createSystemPath("", Main.USER_DIR, "assets", modid, "lang")).mkdirs();
+        new File(Util.createSystemPath("", Main.USER_DIR, Main.ASSETS_PATH, modid, "lang")).mkdirs();
 
         System.err.println("| Added Locale Key-Value Pair");
 
-        File file = new File(Util.createSystemPath("en_us.lang", Main.USER_DIR, "assets", modid, "lang"));
+        File file = new File(Util.createSystemPath("en_us.lang", Main.USER_DIR, Main.ASSETS_PATH, modid, "lang"));
 
-        if (lfe == false)
-            file.delete();
+        if (!lfe){
+            try {
+                java.nio.file.Files.delete(file.toPath());
+            } catch (IOException e) {
+                System.err.println("| A Exception occured while removing old localisation for");
+            e.printStackTrace(System.err);
+            }
+            lfe = true;
+        }
 
         try (FileWriter writer = new FileWriter(file, true)) {
             if (section.getChild(Main.NAME_KEY) == null) {
@@ -157,10 +165,7 @@ public class Generators {
                 }
             }
 
-            lfe = true;
-
             writer.flush();
-            writer.close();
         } catch (IOException e) {
             System.err.println("| A Exception occured while generating localisation for: "
                     + Util.getChildValue(Main.REGISTRY_KEY, section));
@@ -190,8 +195,7 @@ public class Generators {
                 break;
 
             ConfigNode layerNode = Main.MOD_CONFIG
-                    .getChild(Main.MOD_CONFIG.newConfigPath(
-                            Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
+                    .getChild(new ConfigPath(Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
 
             if (!(layerNode instanceof ConfigSection))
                 break;
