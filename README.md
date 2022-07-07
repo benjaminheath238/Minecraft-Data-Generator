@@ -104,6 +104,6 @@ block_1=(name="Block #1", model="true")
 ---
 
 ## Licensing
-This software is licensed under the GPLv2 the definition of which can be found in the [LICENCE](LICENSE) file or at the [website](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
+This software is licensed under the MIT license the definition of which can be found in the [LICENSE](LICENSE) file.
 
 MCDG is open source software. Minecraft is a registered trademark of Mojang. MCDG is not an official Minecraft product. It is not approved by or associated with Mojang.
