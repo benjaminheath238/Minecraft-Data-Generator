@@ -28,11 +28,11 @@ public class Generators {
             writer.write("  \"forge_marker\": 1,\n");
             writer.write("  \"defaults\": {\n");
             writer.write("    \"model\": \"" + modid + ":"
-                    + (Util.getChildValue(Main.PATH_KEY, section).startsWith(Main.FILE_SEPARATOR)
+                    + (Util.getChildValue(Main.PATH_KEY, section).startsWith("/")
                             ? Util.trimFromStart(Util.getChildValue(Main.PATH_KEY, section))
                             : Util.getChildValue(Main.PATH_KEY, section))
-                    + (Util.getChildValue(Main.PATH_KEY, section).endsWith(Main.FILE_SEPARATOR) ? ""
-                            : Main.FILE_SEPARATOR)
+                    + (Util.getChildValue(Main.PATH_KEY, section).endsWith("/") ? ""
+                            : "/")
                     + Util.getChildValue(Main.REGISTRY_KEY, section) + "\"\n");
             writer.write("  },\n");
             writer.write("  \"variants\": {\n");

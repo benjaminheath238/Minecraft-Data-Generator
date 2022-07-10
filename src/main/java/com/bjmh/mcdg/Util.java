@@ -64,8 +64,8 @@ public class Util {
     }
 
     public static String addPathCorrection(String path) {
-        return (path.startsWith(Main.FILE_SEPARATOR) ? "" : Main.FILE_SEPARATOR) + path
-                + (path.endsWith(Main.FILE_SEPARATOR) ? "" : Main.FILE_SEPARATOR);
+        return (path.startsWith("/") ? "" : "/") + path
+                + (path.endsWith("/") ? "" : "/");
     }
 
     public static String removePathCorrection(String path) {

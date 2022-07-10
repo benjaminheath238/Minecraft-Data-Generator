@@ -28,6 +28,8 @@ MCDG requires a mod id and a file to function. The file should contain options f
 
 Sub-sections and complex options will inherit the simple options of parents but only if it has not been redefined. Sub-sections can be nested any number of times. All options and must be located in a section. The naming of sections and options is not defined and up to the user but the naming used for complex options will be taken as the registry name and used for locating textures and creating files.
 
+The file seperator (`/` and `\`) that should be used is `/`.
+
 ---
 
 ## MCTG
