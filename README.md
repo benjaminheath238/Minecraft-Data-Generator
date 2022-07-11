@@ -6,20 +6,20 @@ Minecraft data generator (MCDG) is a tool that allows for the quick and simple g
 
 ## Installation
 
-MCDG requires [Neutron](https://github.com/benjaminheath238/Neutron) and uses [Apache Maven](https://maven.apache.org/) as the build tool both of which must be installed for the following to function.
+MCDG requires [Neutron](https://github.com/benjaminheath238/Neutron), uses [Apache Maven](https://maven.apache.org/) as the build tool and uses Java 17 all of which must be installed for the following to function.
 
 1. Download the source code either directly from [GitHub](https://github.com/benjaminheath238/Minecraft-Data-Generator/archive/refs/heads/master.zip) or by using `got clone https://github.com/benjaminheath238/Minecraft-Data-Generator.git`
-2. If the code was downloaded from GitHub the zip file must be unzipped
-3. Enter the downloaded folder containing the `pom.xml`
-4. Enter `mvn clean compile assembly:single` into the shell/terminal
-5. Collect the jar from `target/mcdg-X.x-jar-with-dependencies.jar`
-6. Run the jar using `java -jar mcdg-X.x-jar-with-dependencies.jar` in the folder containing the mod assets (`resources/`)
+    * If the code was downloaded from GitHub the zip file must be unzipped
+2. Enter the downloaded folder containing the `pom.xml`
+3. Enter `mvn clean compile assembly:single` into the shell/terminal
+4. Collect the jar from `target/mcdg-X.x-jar-with-dependencies.jar`
+5. Run the jar using `java -jar mcdg-X.x-jar-with-dependencies.jar` in the folder containing the mod assets (`resources/`)
 
 ---
 
 ## General Infomation
 
-MCDG requires a mod id and a file to function. The file should contain options for what the program is to do for more infomation of what options are allowed see section MCTG and MCFG. The File is parsed from top to bottom and supports the following;
+MCDG requires a mod id and a file to function. The file should contain options for what the program is to do for more infomation of what options are allowed see sections MCTG and MCFG. The File is parsed from top to bottom and supports the following;
 
 * sections defined using `[name]`
 * sub-sections defined using `[name.subname]`
@@ -28,7 +28,7 @@ MCDG requires a mod id and a file to function. The file should contain options f
 
 Sub-sections and complex options will inherit the simple options of parents but only if it has not been redefined. Sub-sections can be nested any number of times. All options and must be located in a section. The naming of sections and options is not defined and up to the user but the naming used for complex options will be taken as the registry name and used for locating textures and creating files.
 
-The file seperator (`/` and `\`) that should be used is `/`.
+For more infomation see the [Neutron docs](https://github.com/benjaminheath238/Neutron/blob/master/docs/config.md)
 
 ---
 
