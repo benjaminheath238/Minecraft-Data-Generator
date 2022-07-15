@@ -14,13 +14,16 @@ import com.bjmh.lib.io.config.ParserMethod;
 import com.bjmh.lib.io.config.ParserMethods;
 
 public class Main {
+    // Internal Keys
     public static final String REGISTRY_KEY = "registry";
 
+    // External Keys - Task
     public static final String MODEL_KEY = "model";
     public static final String LOCALE_KEY = "locale";
     public static final String BLOCKSTATE_KEY = "blockstate";
     public static final String TEXTURE_KEY = "texture";
 
+    // External Keys - Option
     public static final String TYPE_KEY = "type";
     public static final String NAME_KEY = "name";
     public static final String PATH_KEY = "path";
@@ -28,11 +31,13 @@ public class Main {
     public static final String TRANSPARENT_KEY = "transparent";
     public static final String SIZE_KEY = "size";
 
+    // External Values
     public static final String TRUE_VAL = "true";
     public static final String FALSE_VAL = "false";
     public static final String TILE_VAL = "tile";
     public static final String ITEM_VAL = "item";
 
+    // Internal Values
     public static final String ASSETS_PATH = "assets";
     public static final String JSON_PATH = ".json";
     public static final String MODELS_PATH = "models";
