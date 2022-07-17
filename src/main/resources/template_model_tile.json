@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "particle": "${modid}:blocks${path}${name}",
+        "down": "${modid}:blocks${path}${name}",
+        "up": "${modid}:blocks${path}${name}",
+        "east": "${modid}:blocks${path}${name}",
+        "west": "${modid}:blocks${path}${name}",
+        "north": "${modid}:blocks${path}${name}",
+        "south": "${modid}:blocks${path}${name}"
+    }
+}

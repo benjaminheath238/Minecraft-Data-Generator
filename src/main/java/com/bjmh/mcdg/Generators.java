@@ -10,18 +10,28 @@ import com.bjmh.lib.io.config.ConfigPath;
 import com.bjmh.lib.io.config.ConfigSection;
 
 public class Generators {
+    private static boolean lfe = false;
+
     private Generators() {
     }
 
-    private static boolean lfe = false;
+    public static void generateFromTemplate(ConfigSection section, String modid, Template template) {
+        System.err.println("| Generating For Task: " + template.task + ", using template: " + template.name);
+        System.out.println("| Generating For Task: " + template.task + ", using template: " + template.name);
+
+        String contents = template.contents.replace("${modid}", modid).replace("${path}", Util.getChildValue(Main.PATH_KEY, section)).replace("${name}", Util.getChildValue(Main.REGISTRY_KEY, section));
+    
+        File file = new File(Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section), Main.USER_DIR, modid, template.task, Util.getChildValue(Main.PATH_KEY, section)));
+    }
 
     public static void generateBlockstate(ConfigSection section, String modid) {
         new File(Util.createSystemPath("", Main.USER_DIR, Main.ASSETS_PATH, modid, "blockstates")).mkdirs();
 
         System.err.println("| Creating Blockstate File");
 
-        File file = new File(Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + Main.JSON_PATH,
-                Main.USER_DIR, Main.ASSETS_PATH, modid, "blockstates"));
+        File file = new File(
+                Util.createSystemPath(Util.getChildValue(Main.REGISTRY_KEY, section) + Main.JSON_PATH,
+                        Main.USER_DIR, Main.ASSETS_PATH, modid, "blockstates"));
 
         try (FileWriter writer = new FileWriter(file)) {
             writer.write("{\n");
@@ -98,7 +108,8 @@ public class Generators {
     }
 
     public static void generateItemModel(ConfigSection section, String modid) {
-        new File(Util.createSystemPath("", Main.USER_DIR, Main.ASSETS_PATH, modid, Main.MODELS_PATH, "item")).mkdirs();
+        new File(Util.createSystemPath("", Main.USER_DIR, Main.ASSETS_PATH, modid, Main.MODELS_PATH, "item"))
+                .mkdirs();
 
         System.err.println("| Creating Item Model File");
 
@@ -134,14 +145,15 @@ public class Generators {
 
         System.err.println("| Added Locale Key-Value Pair");
 
-        File file = new File(Util.createSystemPath("en_us.lang", Main.USER_DIR, Main.ASSETS_PATH, modid, "lang"));
+        File file = new File(
+                Util.createSystemPath("en_us.lang", Main.USER_DIR, Main.ASSETS_PATH, modid, "lang"));
 
-        if (!lfe){
+        if (!lfe) {
             try {
                 java.nio.file.Files.delete(file.toPath());
             } catch (IOException e) {
                 System.err.println("| A Exception occured while removing old localisation for");
-            e.printStackTrace(System.err);
+                e.printStackTrace(System.err);
             }
             lfe = true;
         }
@@ -195,7 +207,8 @@ public class Generators {
                 break;
 
             ConfigNode layerNode = Main.MOD_CONFIG
-                    .getChild(new ConfigPath(Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
+                    .getChild(new ConfigPath(
+                            Util.getChildValue(Main.LAYER_KEY + "_" + i, section)));
 
             if (!(layerNode instanceof ConfigSection))
                 break;

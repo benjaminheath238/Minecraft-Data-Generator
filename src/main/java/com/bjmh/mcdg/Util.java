@@ -2,8 +2,10 @@ package com.bjmh.mcdg;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -145,10 +147,12 @@ public class Util {
         }
     }
 
-    public static void copyFileFromJar(String name) {
-        File file = new File(createSystemPath(name, Main.USER_DIR));
+    public static void copyFileFromJar(String name, String path) {
+        new File(createSystemPath("", Main.USER_DIR, path)).mkdirs();
+        File file = new File(createSystemPath(name, Main.USER_DIR, path));
 
-        if (file.exists()) return;
+        if (file.exists())
+            return;
 
         try (InputStream in = Main.class.getClassLoader().getResource(name).openStream();
                 FileOutputStream out = new FileOutputStream(file)) {
@@ -160,5 +164,24 @@ public class Util {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String loadTemplate(String name) {
+        StringBuilder builder = new StringBuilder();
+
+        File file = new File(createSystemPath(name, Main.USER_DIR, "templates"));
+        try (FileReader reader = new FileReader(file);
+                BufferedReader buffer = new BufferedReader(reader)) {
+
+            while (buffer.ready()) {
+                builder.append(buffer.readLine());
+                builder.append("\n");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return builder.toString();
     }
 }

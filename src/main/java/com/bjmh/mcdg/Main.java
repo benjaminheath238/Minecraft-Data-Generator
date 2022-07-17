@@ -3,6 +3,8 @@ package com.bjmh.mcdg;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import com.bjmh.lib.io.config.ConfigConsumer;
@@ -48,15 +50,35 @@ public class Main {
     public static final Scanner SCANNER = new Scanner(System.in);
     public static final Configuration GLOBAL_CONFIG = new Configuration("global");
     public static final Configuration MOD_CONFIG = new Configuration("mod");
+    public static final Map<String, Template> TEMPLATES = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         System.setErr(new PrintStream(new File(Util.createSystemPath("latest.log", USER_DIR))));
 
-        System.err.println("+- Creating Config File If Absent");
-        Util.copyFileFromJar("mcdg.ini");
+        System.err.println("+- Creating And Loading Config");
+        System.err.println("| Creating Config File If Absent");
+        Util.copyFileFromJar("mcdg.ini", "");
 
-        System.err.println("+- Loading Config File");
-        GLOBAL_CONFIG.parse(Util.createSystemPath("mcdg.ini", USER_DIR), ParserMethods.INI_PARSER_SIMPLE);
+        System.err.println("| Loading Config File");
+        GLOBAL_CONFIG.parse(Util.createSystemPath("mcdg.ini", USER_DIR), new ParserMethod() {
+            private ConfigSection current = null;
+
+            @Override
+            public void parse(String line, Configuration config) {
+                line = ParserMethods.removeComments(line);
+
+                if (line.isEmpty()) return;
+
+                if (ParserMethods.isHeader(line)) {
+                    current = ParserMethods.parseHeader(line, config);
+                } else if (ParserMethods.isComplexOption(line)) {
+                    current.addChild(ParserMethods.parseComplexOption(line, current));
+                } else {
+                    config.addChild(ParserMethods.parseSimpleOption(line, config));
+                }
+            }
+            
+        });
 
         String modid = Util.getChildValue("modid", GLOBAL_CONFIG);
         if (modid == null) {
@@ -70,10 +92,35 @@ public class Main {
             path = SCANNER.nextLine();
         }
 
+        System.err.println("+- Creating Default Template Files If Absent");
+        Util.copyFileFromJar("template_blockstate.json", "templates");
+        Util.copyFileFromJar("template_model_item.json", "templates");
+        Util.copyFileFromJar("template_model_tile.json", "templates");
+        
+        for (ConfigNode node : Util.getChildAsConfigSection("Templates", GLOBAL_CONFIG).getChildren()) {
+            if (!(node instanceof ConfigSection)) continue;
+
+            ConfigSection section = (ConfigSection) node;
+
+            Template template = new Template();
+
+            System.err.println("| Loading Template: " + section);
+
+            template.name = section.getName();
+            template.task = Util.getChildValue("task", section);
+            template.type = Util.getChildValue("type", section);
+            template.contents = Util.loadTemplate(template.name + ".json");
+
+            TEMPLATES.put(template.name, template);
+        }
+
+        System.err.println("| Loaded Templates: " + TEMPLATES);
+
         System.err.println("+- Parsing User Config File");
         MOD_CONFIG.parse(path, new ParserMethod() {
             private ConfigSection current = null;
 
+            @Override
             public void parse(String line, Configuration config) {
                 line = ParserMethods.removeComments(line);
 
@@ -112,7 +159,7 @@ public class Main {
             }
         });
 
-        System.err.println("+- Iterating User Config File");
+        System.err.println("| Iterating User Config File");
         MOD_CONFIG.foreach(new ModConfConsumer(modid));
     }
 
